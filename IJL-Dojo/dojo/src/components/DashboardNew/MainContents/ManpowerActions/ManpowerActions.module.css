@@ -1,0 +1,45 @@
+.container {
+    width: 100%;
+    border: 1px solid #333;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: white;
+    /* font-family: Arial, sans-serif; */
+  }
+  
+  .header {
+    background-color: #222;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  
+  .list {
+    max-height: 180px; /* Adjust as needed */
+    overflow-y: auto;
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+  }
+  
+  .list::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari, and Edge */
+  }
+  
+  .item {
+    padding: 10px;
+    transition: background 0.3s ease;
+  }
+  
+  /* Even items */
+  .item:nth-child(even) {
+    background-color: #87CEFA; /* Light blue */
+  }
+  
+  /* Odd items */
+  .item:nth-child(odd) {
+    background-color: #1E90FF; /* Dodger blue */
+    color: white;
+  }
+  

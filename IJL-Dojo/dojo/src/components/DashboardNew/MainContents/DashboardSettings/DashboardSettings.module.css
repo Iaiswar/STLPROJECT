@@ -1,0 +1,151 @@
+.settingsContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: #333;
+    text-align: center;
+  }
+  
+  .formSection {
+    margin-bottom: 30px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .formSection h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #444;
+  }
+  
+  .input, .select, .numberInput {
+    width: 100%;
+    padding: 8px 10px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .numberInput {
+    width: 80px;
+    text-align: center;
+  }
+  
+  .tableContainer {
+    overflow-x: auto;
+    margin-top: 10px;
+  }
+  
+  .dataTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  
+  .dataTable th, .dataTable td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .dataTable th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+  }
+  
+  .dataTable tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  
+  .tabsContainer {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .tabs {
+    display: flex;
+    background-color: #eee;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .tabs button {
+    padding: 10px 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .tabActive {
+    background-color: #fff;
+    font-weight: bold;
+    border-bottom: 2px solid #0066cc;
+  }
+  
+  .actionsList {
+    margin-bottom: 15px;
+  }
+  
+  .actionItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .removeButton {
+    background-color: #ff3333;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  
+  .actionInput {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  
+  .addButton {
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .buttonContainer {
+    margin-top: 30px;
+    text-align: center;
+  }
+  
+  .saveButton {
+    background-color: #00aa55;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .saveButton:hover {
+    background-color: #008844;
+  }

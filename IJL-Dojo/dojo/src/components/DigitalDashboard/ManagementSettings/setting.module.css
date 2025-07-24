@@ -1,0 +1,336 @@
+.settingsContainer {
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.settingsTitle {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+  font-weight: 500;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.settingsSection {
+  margin-bottom: 30px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+}
+
+.settingsSection h3 {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.cardSettingsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.cardSetting {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fafafa;
+}
+
+.previewCard {
+  padding: 15px;
+  border-radius: 6px;
+  text-align: center;
+  color: white;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.previewCard h3 {
+  font-size: 24px;
+  margin-bottom: 8px;
+  color: white;
+}
+
+.previewCard p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.cardControls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.inputGroup label {
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
+.inputGroup input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.inputGroup input:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.inputGroup input[type="color"] {
+  height: 36px;
+  padding: 2px;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.saveButton {
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+  
+.saveButton:hover {
+  background-color: #2980b9;
+}
+
+
+.settingsSection {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  margin-top: 15px;
+}
+
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.dataTable th,
+.dataTable td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.dataTable th {
+  background-color: #f7f7f7;
+  font-weight: 600;
+  color: #333;
+}
+
+.dataTable tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+.tableInput {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.tableInput:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+/* You might want to add responsive styles for smaller screens */
+@media (max-width: 768px) {
+  .tableWrapper {
+    overflow-x: scroll;
+  }
+  
+  .dataTable th,
+  .dataTable td {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.productionPlanSection {
+  font-family: Arial, sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.productionPlanSection h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.productionPlanSection h4 {
+  color: #555;
+  margin: 20px 0 10px;
+  font-size: 1.2rem;
+}
+
+.inputForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.formGroup {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.formDropdown, .formInput {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.formDropdown:focus, .formInput:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 3px rgba(74, 144, 226, 0.3);
+}
+
+.submitButton {
+  padding: 10px 20px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  align-self: flex-end;
+  margin-top: auto;
+}
+
+.submitButton:hover {
+  background-color: #3a7bc8;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+.dataTable th, .dataTable td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.dataTable th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.dataTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.dataTable tr:hover {
+  background-color: #f1f1f1;
+}
+
+.deleteButton {
+  padding: 5px 10px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.deleteButton:hover {
+  background-color: #c0392b;
+}
+
+@media (max-width: 768px) {
+  .inputForm {
+    flex-direction: column;
+  }
+  
+  .formGroup {
+    width: 100%;
+  }
+  
+  .submitButton {
+    width: 100%;
+    margin-top: 15px;
+  }
+}
