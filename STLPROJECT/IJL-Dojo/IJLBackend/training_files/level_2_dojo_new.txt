@@ -1,0 +1,326 @@
+models.py
+------------------
+class LevelTwoSkillTraining(models.Model):
+    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='leveltwo_skill_trainings')
+    title = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.title}"
+    
+
+
+class LevelTwoSection(models.Model):
+    skill_training = models.ForeignKey(LevelTwoSkillTraining, on_delete=models.CASCADE, related_name='leveltwo_sections')
+    title = models.CharField(max_length=100)
+
+
+
+class LevelTwoTopic(models.Model):
+    section = models.ForeignKey(LevelTwoSection, on_delete=models.CASCADE, related_name='leveltwo_topics')
+    title = models.CharField(max_length=100)
+
+
+
+class LevelTwoSubTopic(models.Model):
+    topic = models.ForeignKey(LevelTwoTopic, on_delete=models.CASCADE, related_name='leveltwo_subtopics')
+    title = models.CharField(max_length=100)
+
+
+
+from django.core.exceptions import ValidationError
+
+class LevelTwoUnit(models.Model):
+    topic = models.ForeignKey(LevelTwoTopic, on_delete=models.CASCADE, related_name='leveltwo_units', null=True, blank=True)
+    subtopic = models.ForeignKey(LevelTwoSubTopic, on_delete=models.CASCADE, related_name='leveltwo_units', null=True, blank=True)
+    day = models.ForeignKey('Days', on_delete=models.CASCADE, related_name='leveltwo_units')
+    content = models.TextField()
+
+    def clean(self):
+        if not self.topic and not self.subtopic:
+            raise ValidationError("At least one of 'topic' or 'subtopic' must be provided.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Triggers clean() method
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        topic_title = self.topic.title if self.topic else "No Topic"
+        subtopic_title = self.subtopic.title if self.subtopic else "No Subtopic"
+        return f"Unit for {subtopic_title} under {topic_title} on {self.day.day}"
+
+
+
+class LevelTwoSubUnit(models.Model):
+    unit = models.ForeignKey(LevelTwoUnit, on_delete=models.CASCADE, related_name='subunits')
+    title = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"SubUnit: {self.title} (Unit ID: {self.unit.id})"
+
+
+class LevelTwoTrainingContent(models.Model):
+    subunit = models.ForeignKey('LevelTwoSubUnit', on_delete=models.CASCADE, related_name='leveltwo_contents',default='')
+    description = models.TextField()
+
+    training_file = models.FileField(upload_to='training_files/', blank=True, null=True)
+    url_link = models.URLField(max_length=500, blank=True, null=True)
+
+    def __str__(self):
+     return f"Content for {self.subunit.title}"
+
+
+
+
+
+
+
+
+
+serializers.py
+-----------------
+
+
+from rest_framework import serializers
+from .models import (
+    LevelTwoSkillTraining,
+    LevelTwoSection,
+    LevelTwoTopic,
+    LevelTwoSubTopic,
+    LevelTwoUnit,
+    LevelTwoSubUnit,
+    LevelTwoTrainingContent,
+)
+
+
+class LevelTwoTrainingContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LevelTwoTrainingContent
+        fields = '__all__'
+
+
+class LevelTwoSubUnitSerializer(serializers.ModelSerializer):
+    leveltwo_contents = LevelTwoTrainingContentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = LevelTwoSubUnit
+        fields = '__all__'
+
+
+class LevelTwoUnitSerializer(serializers.ModelSerializer):
+    subunits = LevelTwoSubUnitSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = LevelTwoUnit
+        fields = '__all__'
+
+
+class LevelTwoSubTopicSerializer(serializers.ModelSerializer):
+    leveltwo_units = LevelTwoUnitSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = LevelTwoSubTopic
+        fields = '__all__'
+
+
+class LevelTwoTopicSerializer(serializers.ModelSerializer):
+    leveltwo_subtopics = LevelTwoSubTopicSerializer(many=True, read_only=True)
+    leveltwo_units = LevelTwoUnitSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = LevelTwoTopic
+        fields = '__all__'
+
+
+class LevelTwoSectionSerializer(serializers.ModelSerializer):
+    leveltwo_topics = LevelTwoTopicSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = LevelTwoSection
+        fields = '__all__'
+
+
+class LevelTwoSkillTrainingSerializer(serializers.ModelSerializer):
+    leveltwo_sections = LevelTwoSectionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = LevelTwoSkillTraining
+        fields = '__all__'
+
+
+
+
+
+
+
+
+views.py
+-------------------
+from rest_framework import viewsets
+from .models import (
+    LevelTwoSkillTraining,
+    LevelTwoSection,
+    LevelTwoTopic,
+    LevelTwoSubTopic,
+    LevelTwoUnit,
+    LevelTwoSubUnit,
+    LevelTwoTrainingContent,
+)
+from .serializers import (
+    LevelTwoSkillTrainingSerializer,
+    LevelTwoSectionSerializer,
+    LevelTwoTopicSerializer,
+    LevelTwoSubTopicSerializer,
+    LevelTwoUnitSerializer,
+    LevelTwoSubUnitSerializer,
+    LevelTwoTrainingContentSerializer,
+)
+
+
+class LevelTwoSkillTrainingViewSet(viewsets.ModelViewSet):
+    queryset = LevelTwoSkillTraining.objects.all()
+    serializer_class = LevelTwoSkillTrainingSerializer
+
+
+class LevelTwoSectionViewSet(viewsets.ModelViewSet):
+    queryset = LevelTwoSection.objects.all()
+    serializer_class = LevelTwoSectionSerializer
+
+
+class LevelTwoTopicViewSet(viewsets.ModelViewSet):
+    queryset = LevelTwoTopic.objects.all()
+    serializer_class = LevelTwoTopicSerializer
+
+
+class LevelTwoSubTopicViewSet(viewsets.ModelViewSet):
+    queryset = LevelTwoSubTopic.objects.all()
+    serializer_class = LevelTwoSubTopicSerializer
+
+
+class LevelTwoUnitViewSet(viewsets.ModelViewSet):
+    queryset = LevelTwoUnit.objects.all()
+    serializer_class = LevelTwoUnitSerializer
+
+
+class LevelTwoSubUnitViewSet(viewsets.ModelViewSet):
+    queryset = LevelTwoSubUnit.objects.all()
+    serializer_class = LevelTwoSubUnitSerializer
+
+
+class LevelTwoTrainingContentViewSet(viewsets.ModelViewSet):
+    queryset = LevelTwoTrainingContent.objects.all()
+    serializer_class = LevelTwoTrainingContentSerializer
+
+
+
+
+
+
+
+urls.py
+--------------
+router.register(r'level2-skill-trainings', LevelTwoSkillTrainingViewSet)
+router.register(r'level2-sections', LevelTwoSectionViewSet)
+router.register(r'level2-topics', LevelTwoTopicViewSet)
+router.register(r'level2-subtopics', LevelTwoSubTopicViewSet)
+router.register(r'level2-units', LevelTwoUnitViewSet)
+router.register(r'level2-subunits', LevelTwoSubUnitViewSet)
+router.register(r'level2-contents', LevelTwoTrainingContentViewSet)
+
+
+
+
+
+
+
+
+admin.py
+-----------------
+
+
+from django.contrib import admin
+from .models import (
+    LevelTwoSkillTraining,
+    LevelTwoSection,
+    LevelTwoTopic,
+    LevelTwoSubTopic,
+    LevelTwoUnit,
+    LevelTwoSubUnit,
+    LevelTwoTrainingContent,
+)
+
+# Inline for LevelTwoTrainingContent inside LevelTwoSubUnit
+class LevelTwoTrainingContentInline(admin.TabularInline):
+    model = LevelTwoTrainingContent
+    extra = 1
+
+# Inline for LevelTwoSubUnit inside LevelTwoUnit
+class LevelTwoSubUnitInline(admin.TabularInline):
+    model = LevelTwoSubUnit
+    extra = 1
+    show_change_link = True
+
+# Inline for LevelTwoUnit inside LevelTwoTopic and LevelTwoSubTopic
+class LevelTwoUnitInline(admin.TabularInline):
+    model = LevelTwoUnit
+    extra = 1
+    show_change_link = True
+
+# Inline for LevelTwoSubTopic inside LevelTwoTopic
+class LevelTwoSubTopicInline(admin.TabularInline):
+    model = LevelTwoSubTopic
+    extra = 1
+    show_change_link = True
+
+# Inline for LevelTwoTopic inside LevelTwoSection
+class LevelTwoTopicInline(admin.TabularInline):
+    model = LevelTwoTopic
+    extra = 1
+    show_change_link = True
+
+# Inline for LevelTwoSection inside LevelTwoSkillTraining
+class LevelTwoSectionInline(admin.TabularInline):
+    model = LevelTwoSection
+    extra = 1
+    show_change_link = True
+
+
+@admin.register(LevelTwoSkillTraining)
+class LevelTwoSkillTrainingAdmin(admin.ModelAdmin):
+    list_display = ['title', 'level']
+    inlines = [LevelTwoSectionInline]
+
+
+@admin.register(LevelTwoSection)
+class LevelTwoSectionAdmin(admin.ModelAdmin):
+    list_display = ['title', 'skill_training']
+    inlines = [LevelTwoTopicInline]
+
+
+@admin.register(LevelTwoTopic)
+class LevelTwoTopicAdmin(admin.ModelAdmin):
+    list_display = ['title', 'section']
+    inlines = [LevelTwoSubTopicInline, LevelTwoUnitInline]
+
+
+@admin.register(LevelTwoSubTopic)
+class LevelTwoSubTopicAdmin(admin.ModelAdmin):
+    list_display = ['title', 'topic']
+    inlines = [LevelTwoUnitInline]
+
+
+@admin.register(LevelTwoUnit)
+class LevelTwoUnitAdmin(admin.ModelAdmin):
+    list_display = ['id', 'topic', 'subtopic', 'day', 'content']
+    inlines = [LevelTwoSubUnitInline]
+
+
+@admin.register(LevelTwoSubUnit)
+class LevelTwoSubUnitAdmin(admin.ModelAdmin):
+    list_display = ['title', 'unit']
+    inlines = [LevelTwoTrainingContentInline]
+
+
+@admin.register(LevelTwoTrainingContent)
+class LevelTwoTrainingContentAdmin(admin.ModelAdmin):
+    list_display = ['subunit', 'description', 'training_file', 'url_link']
+
