@@ -495,3 +495,8 @@ class ScoreAdmin(admin.ModelAdmin):
     search_fields = ('employee__name', 'employee__pay_code', 'test_name')
     ordering = ('-created_at',)
     date_hierarchy = 'created_at'
+
+
+from .models import CompanyLogo
+
+admin.site.register(CompanyLogo)
