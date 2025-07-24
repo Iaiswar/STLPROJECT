@@ -1,0 +1,99 @@
+# ===================== #
+# OS-SPECIFIC FILES     #
+# ===================== #
+
+# macOS system files
+.DS_Store
+__MACOSX/
+
+# Windows thumbnail database
+Thumbs.db
+
+# ===================== #
+# PYTHON/DJANGO         #
+# ===================== #
+
+# Python bytecode/cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+
+# Django secret keys / environment vars
+.env
+.env.*
+
+# Database (SQLite)
+db.sqlite3
+*.sqlite3
+
+# Django Migrations (optional if you want to keep them in version control)
+**/migrations/*.pyc
+**/migrations/__pycache__/
+
+# VSCode config (optional)
+.vscode/
+
+# ===================== #
+# NODE / REACT          #
+# ===================== #
+
+# Node modules
+**/node_modules/
+
+# Build output
+build/
+dist/
+
+# React-specific
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# dotenv files
+*.env.local
+*.env.development
+*.env.production
+*.env.test
+
+# IDE settings (optional but recommended)
+.idea/
+*.swp
+
+# ===================== #
+# Git                   #
+# ===================== #
+
+# Git ignore backup
+.gitignore~
+
+# ===================== #
+# Others                #
+# ===================== #
+
+# Compiled CSS from SCSS (if any)
+*.css.map
+
+# Package lock files (optional depending on preference)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Test coverage (if you use pytest or jest)
+.coverage
+coverage/
+htmlcov/
+jest-html-reporters-*.html
+
+# Linting reports
+report.html
+pylint-report.txt
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
