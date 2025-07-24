@@ -4794,3 +4794,43 @@ class EmployeeReportPDFView(View):
             ('TEXTCOLOR', (1, row), (1, row), color),
             ('FONTNAME', (1, row), (1, row), 'Helvetica-Bold')
         ]
+
+
+
+# STL code start
+  
+from .models import STLDepartment
+from .serializers import STLDepartmentSerializer
+
+class STLDepartmentViewSet(viewsets.ModelViewSet):
+    queryset = STLDepartment.objects.all()
+    serializer_class = STLDepartmentSerializer
+
+
+
+
+from .models import (
+    IntakeSheet,
+    IntakeEntry,
+    SheetHandover,
+    IntakeRevisionHistory
+)
+
+from .serializers import (
+    IntakeSheetSerializer,
+    IntakeEntrySerializer,
+    SheetHandoverSerializer,
+    IntakeRevisionHistorySerializer
+)
+
+
+class IntakeSheetViewSet(viewsets.ModelViewSet):
+    queryset = IntakeSheet.objects.all().order_by('-date_created')
+    serializer_class = IntakeSheetSerializer
+
+    def create(self, request, *args, **kwargs):
+        with transaction.atomic():
+            serializer = self.get_serializer(data=request.data, context={'request': request})
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -36,13 +36,30 @@ from .views import MachineAllocationViewSet,EmployeeMachineAllocationViewSet
 
 from .views import Training_categoryViewSet, CurriculumViewSet, CurriculumContentViewSet, Trainer_nameViewSet, VenueViewSet, ScheduleViewSet, EmployeeAttendanceViewSet, RescheduleLogViewSet
 
+# STL code start
 
+from .views import (
+    STLDepartmentViewSet,
+    IntakeSheetViewSet, 
+)
 
 app_name = 'app1'
 
 
 # Setup router
 router = DefaultRouter()
+
+# STL code start
+
+
+# Master Data
+router.register(r'stl-departments', STLDepartmentViewSet, basename='stl-department')
+
+
+# Intake Process
+router.register(r'intake-sheets', IntakeSheetViewSet, basename='intake-sheet')
+
+
 
 
 #AR-VR IJL

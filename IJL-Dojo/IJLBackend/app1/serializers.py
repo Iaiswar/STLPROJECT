@@ -2567,15 +2567,6 @@ class SDCOrientationFeedbackSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
-
-
-
-
-
 from rest_framework import serializers
 from .models import UserInfo, HumanBodyCheck, SDCOrientationFeedback
 
@@ -2605,5 +2596,128 @@ class FetchUserInfoSerializer(serializers.ModelSerializer):
         body_check = HumanBodyCheck.objects.filter(temp_id=obj.temp_id, overall_status='pass').first()
         return FetchHumanBodyCheckSerializer(body_check).data if body_check else None
 
+
+
+# STL Code start
+
+
+import json
+from django.db import transaction
+from rest_framework import serializers
+from .models import IntakeSheet, IntakeEntry, SheetHandover, IntakeRevisionHistory, STLDepartment
+
+class STLDepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = STLDepartment
+        fields = '__all__'
+
+class IntakeEntrySerializer(serializers.ModelSerializer):
+    department_name = serializers.CharField(source='department.name', read_only=True)
+
+    class Meta:
+        model = IntakeEntry
+        fields = [
+            'id', 'sr_no', 'contractor_name', 'category',
+            'candidate_name', 'education', 'bio_data_submitted',
+            'department', 'department_name', 'remark'
+        ]
+
+class SheetHandoverSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SheetHandover
+        exclude = ['sheet']
+
+class IntakeRevisionHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IntakeRevisionHistory
+        exclude = ['sheet']
+
+class IntakeSheetSerializer(serializers.ModelSerializer):
+    # For GET requests - return proper nested data
+    entries = IntakeEntrySerializer(many=True, read_only=True)
+    handover = SheetHandoverSerializer(read_only=True)
+    revision_logs = IntakeRevisionHistorySerializer(many=True, read_only=True)
+    
+    # For POST requests - accept JSON strings
+    entries_data = serializers.CharField(write_only=True, required=False, source='entries')
+    handover_data = serializers.CharField(write_only=True, required=False, source='handover')
+    revision_logs_data = serializers.CharField(write_only=True, required=False, source='revision_logs')
+
+    class Meta:
+        model = IntakeSheet
+        fields = [
+            'id', 'ref_no', 'rev_no', 'rev_date', 'date_created',
+            'entries', 'handover', 'revision_logs',  # For GET
+            'entries_data', 'handover_data', 'revision_logs_data'  # For POST
+        ]
+        read_only_fields = ['date_created']
+
+    def create(self, validated_data):
+        with transaction.atomic():
+            # Parse JSON strings from write_only fields
+            entries_json = validated_data.pop('entries', None)
+            handover_json = validated_data.pop('handover', None)
+            revision_logs_json = validated_data.pop('revision_logs', None)
+            
+            if entries_json:
+                entries_data = json.loads(entries_json)
+            else:
+                entries_data = []
+                
+            if handover_json:
+                handover_data = json.loads(handover_json)
+            else:
+                handover_data = {}
+                
+            if revision_logs_json:
+                revision_logs_data = json.loads(revision_logs_json)
+            else:
+                revision_logs_data = []
+            
+            # Create main sheet
+            sheet = IntakeSheet.objects.create(**validated_data)
+            
+            # Create entries with proper data type handling
+            for index, entry_data in enumerate(entries_data):
+                # Handle department foreign key
+                if entry_data.get('department'):
+                    try:
+                        department_id = int(entry_data['department'])
+                        entry_data['department'] = STLDepartment.objects.get(id=department_id)
+                    except (ValueError, STLDepartment.DoesNotExist):
+                        entry_data['department'] = None
+                else:
+                    entry_data['department'] = None
+                
+                # Handle bio-data file upload
+                bio_file_key = f'bio_data_{index}'
+                if bio_file_key in self.context['request'].FILES:
+                    entry_data['bio_data_submitted'] = self.context['request'].FILES[bio_file_key]
+                
+                # Ensure sr_no is integer
+                if 'sr_no' in entry_data:
+                    try:
+                        entry_data['sr_no'] = int(entry_data['sr_no'])
+                    except ValueError:
+                        entry_data['sr_no'] = index + 1
+                
+                IntakeEntry.objects.create(sheet=sheet, **entry_data)
+            
+            # Create handover
+            if handover_data:
+                SheetHandover.objects.create(sheet=sheet, **handover_data)
+            
+            # Create revision logs
+            for rev_data in revision_logs_data:
+                # Ensure sno is integer
+                if 'sno' in rev_data:
+                    try:
+                        rev_data['sno'] = int(rev_data['sno'])
+                    except ValueError:
+                        rev_data['sno'] = 1
+                
+                IntakeRevisionHistory.objects.create(sheet=sheet, **rev_data)
+            
+            return sheet
 
 

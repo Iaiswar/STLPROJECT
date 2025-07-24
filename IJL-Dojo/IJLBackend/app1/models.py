@@ -2188,13 +2188,6 @@ class HumanBodyCheck(models.Model):
 
 
 
-
-
-
-
-
-
-
 from django.db import models
 
 class SDCOrientationFeedback(models.Model):
@@ -2241,3 +2234,76 @@ class SDCOrientationFeedback(models.Model):
     @property
     def doj(self):
         return self.operator.date_of_join if self.operator else None
+
+
+# STL Codes Start
+
+class STLDepartment(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+# --------------------manpower intake sheet-------------------#
+from django.db import models
+from .models import STLDepartment  # Assuming these exist already
+
+class IntakeSheet(models.Model):
+    ref_no = models.CharField(max_length=20, default='HRM-F-26')
+    rev_no = models.CharField(max_length=10, default='00')
+    rev_date = models.DateField()
+    date_created = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.ref_no} | Rev {self.rev_no} | {self.rev_date}"
+
+
+class IntakeEntry(models.Model):
+    CATEGORY_CHOICES = [
+        ('Casual', 'Casual'),
+        ('NAPS', 'NAPS'),
+    ]
+
+    sheet = models.ForeignKey(IntakeSheet, on_delete=models.CASCADE, related_name='entries')
+    sr_no = models.PositiveIntegerField()
+    contractor_name = models.CharField(max_length=100)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    candidate_name = models.CharField(max_length=100)
+    education = models.CharField(max_length=100, blank=True, null=True)
+    bio_data_submitted = models.FileField(upload_to='biodata/', blank=True, null=True)
+    department = models.ForeignKey(STLDepartment, on_delete=models.SET_NULL, null=True, blank=True)
+    remark = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = ('sheet', 'sr_no')
+        ordering = ['sr_no']
+
+    def __str__(self):
+        return f"{self.candidate_name} (Sheet: {self.sheet.id})"
+
+
+class SheetHandover(models.Model):
+    sheet = models.OneToOneField(IntakeSheet, on_delete=models.CASCADE, related_name='handover')
+    admin_name = models.CharField(max_length=100)
+    admin_signature = models.ImageField(upload_to='signatures/admin/', blank=True, null=True)
+    dojo_person_name = models.CharField(max_length=100)
+    dojo_signature = models.ImageField(upload_to='signatures/dojo/', blank=True, null=True)
+
+    def __str__(self):
+        return f"Handover for Sheet #{self.sheet.id}"
+
+
+class IntakeRevisionHistory(models.Model):
+    sheet = models.ForeignKey(IntakeSheet, on_delete=models.CASCADE, related_name='revision_logs')
+    sno = models.PositiveIntegerField()
+    rev_no = models.CharField(max_length=10)
+    rev_date = models.DateField()
+    rev_history = models.TextField()
+    reason_for_change = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['sno']
+
+    def __str__(self):
+        return f"Rev {self.rev_no} - {self.rev_date}"
