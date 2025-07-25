@@ -2238,16 +2238,17 @@ class SDCOrientationFeedback(models.Model):
 
 # STL Codes Start
 
+from django.db import models
+from django.db.models import Max
+from datetime import datetime
+
 class STLDepartment(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
 
-
 # --------------------manpower intake sheet-------------------#
-from django.db import models
-from .models import STLDepartment  # Assuming these exist already
 
 class IntakeSheet(models.Model):
     ref_no = models.CharField(max_length=20, default='HRM-F-26')
@@ -2258,15 +2259,32 @@ class IntakeSheet(models.Model):
     def __str__(self):
         return f"{self.ref_no} | Rev {self.rev_no} | {self.rev_date}"
 
-
 class IntakeEntry(models.Model):
     CATEGORY_CHOICES = [
         ('Casual', 'Casual'),
         ('NAPS', 'NAPS'),
     ]
+    
+    STATUS_CHOICES = [
+        ('intake', 'Intake Complete'),
+        ('training', 'In Training'),
+        ('evaluation', 'In Evaluation'),
+        ('passed', 'Passed'),
+        ('failed', 'Failed'),
+        ('deployed', 'Deployed')
+    ]
 
     sheet = models.ForeignKey(IntakeSheet, on_delete=models.CASCADE, related_name='entries')
     sr_no = models.PositiveIntegerField()
+    
+    # Add temp_id field
+    temp_id = models.CharField(
+        max_length=50,
+        unique=True,
+        editable=False,
+        help_text="Auto-generated temporary ID for the candidate"
+    )
+    
     contractor_name = models.CharField(max_length=100)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     candidate_name = models.CharField(max_length=100)
@@ -2274,14 +2292,33 @@ class IntakeEntry(models.Model):
     bio_data_submitted = models.FileField(upload_to='biodata/', blank=True, null=True)
     department = models.ForeignKey(STLDepartment, on_delete=models.SET_NULL, null=True, blank=True)
     remark = models.TextField(blank=True)
+    
+    # Add status tracking for workflow
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='intake',
+        help_text="Current status in the STL workflow"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ('sheet', 'sr_no')
         ordering = ['sr_no']
 
     def __str__(self):
-        return f"{self.candidate_name} (Sheet: {self.sheet.id})"
-
+        return f"{self.temp_id} - {self.candidate_name}"
+    
+    def save(self, *args, **kwargs):
+        if not self.temp_id:
+            today = datetime.now().strftime("%d%m%y")
+            prefix = f"TEMP{today}"
+            max_seq = IntakeEntry.objects.filter(temp_id__startswith=prefix).aggregate(Max('temp_id'))['temp_id__max']
+            current_seq = int(max_seq[-4:]) + 1 if max_seq else 1
+            self.temp_id = f"{prefix}{current_seq:04d}"
+        super().save(*args, **kwargs)
 
 class SheetHandover(models.Model):
     sheet = models.OneToOneField(IntakeSheet, on_delete=models.CASCADE, related_name='handover')
@@ -2292,7 +2329,6 @@ class SheetHandover(models.Model):
 
     def __str__(self):
         return f"Handover for Sheet #{self.sheet.id}"
-
 
 class IntakeRevisionHistory(models.Model):
     sheet = models.ForeignKey(IntakeSheet, on_delete=models.CASCADE, related_name='revision_logs')

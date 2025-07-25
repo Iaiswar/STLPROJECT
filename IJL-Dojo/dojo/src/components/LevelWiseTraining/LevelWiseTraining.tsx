@@ -14,7 +14,7 @@ const LevelWiseTraining: React.FC = () => {
   // Define levels with their routes in a single configuration
   const levels = useMemo<Level[]>(() => [
     {
-      name: 'Level 0',
+      name: 'Registration',
       subheading: '',
       route: '/Level0'
     },

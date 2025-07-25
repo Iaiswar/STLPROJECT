@@ -9,7 +9,7 @@ const PrivacyPolicyVersionControl = () => {
         <div className="bg-blue-700 text-white py-8 px-8 rounded-t-2xl">
           <h1 className="text-3xl font-bold">Privacy Policy</h1>
           <div className="mt-4 space-y-1">
-            <p className="text-blue-100 text-sm">Version: 01 02 00 00 B</p>
+            <p className="text-blue-100 text-sm">Version: 01 03 00 00 C</p>  { /* Updated version number */}
             <p className="text-blue-100 text-sm">Effective Date: July 12, 2025</p>
             <p className="text-blue-100 text-sm">Last Updated: July 12, 2025</p>
           </div>

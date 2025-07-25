@@ -21,7 +21,8 @@ const Level0Nav = () => {
                     {/* Title section */}
                     <div className="flex flex-col justify-center">
                         <span className="text-xl font-extrabold text-gray-800 tracking-tight">
-                            Level 0
+                            {/* Level 0 */}
+                            Registration
                         </span>
                         {/* <span className="text-sm text-gray-500">
               Employee Skill Management System

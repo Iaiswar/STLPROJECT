@@ -191,5 +191,5 @@ export const tiles = [
     borderTopColor: 'border-t-green-600',
     iconColor: 'text-white',
     iconBgColor: 'bg-green-600',
-  },
+},
 ];

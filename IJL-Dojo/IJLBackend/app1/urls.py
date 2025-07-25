@@ -36,11 +36,11 @@ from .views import MachineAllocationViewSet,EmployeeMachineAllocationViewSet
 
 from .views import Training_categoryViewSet, CurriculumViewSet, CurriculumContentViewSet, Trainer_nameViewSet, VenueViewSet, ScheduleViewSet, EmployeeAttendanceViewSet, RescheduleLogViewSet
 
-# STL code start
+# STL code start     NEW 
 
 from .views import (
     STLDepartmentViewSet,
-    IntakeSheetViewSet, 
+    IntakeSheetViewSet, IntakeEntryListView
 )
 
 app_name = 'app1'
@@ -468,6 +468,12 @@ urlpatterns = [
     path('user-body-checks/', UserInfoBodyCheckListView.as_view(), name='user_body_check_list'),
     path('remaining-departments/', RemainingDepartmentsView.as_view(), name='remaining-departments'),
     path('scheduled-employees-skills/', ScheduledEmployeesSkillsView.as_view(), name='scheduled-employees-skills'),
+
+    # STL NEW URLS
+
+    path('intake-entries/', IntakeEntryListView.as_view(), name='intake-entries-list'),
+
+
     # Router URLs
     path('', include(router.urls)),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

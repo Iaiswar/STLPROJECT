@@ -1554,6 +1554,8 @@ class ScheduledEmployeesSkillsView(APIView):
                     'skills': [],
                 }
             serializer = MultiSkillingSerializer(skill)
+
+
             skill_data = serializer.data
 
             # Add each skill to employee's skill list
@@ -4799,38 +4801,67 @@ class EmployeeReportPDFView(View):
 
 # STL code start
   
-from .models import STLDepartment
-from .serializers import STLDepartmentSerializer
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework import generics
+from django.db import transaction
+from .models import STLDepartment, IntakeSheet, IntakeEntry, SheetHandover, IntakeRevisionHistory
+from .serializers import (
+    STLDepartmentSerializer,
+    IntakeSheetSerializer,
+    IntakeEntrySerializer,
+    IntakeEntryDisplaySerializer, 
+    SheetHandoverSerializer,
+    IntakeRevisionHistorySerializer
+)
 
 class STLDepartmentViewSet(viewsets.ModelViewSet):
     queryset = STLDepartment.objects.all()
     serializer_class = STLDepartmentSerializer
 
-
-
-
-from .models import (
-    IntakeSheet,
-    IntakeEntry,
-    SheetHandover,
-    IntakeRevisionHistory
-)
-
-from .serializers import (
-    IntakeSheetSerializer,
-    IntakeEntrySerializer,
-    SheetHandoverSerializer,
-    IntakeRevisionHistorySerializer
-)
-
-
 class IntakeSheetViewSet(viewsets.ModelViewSet):
     queryset = IntakeSheet.objects.all().order_by('-date_created')
-    serializer_class = IntakeSheetSerializer
+    serializer_class = IntakeSheetSerializer  # Use the same serializer for both GET and POST
 
     def create(self, request, *args, **kwargs):
         with transaction.atomic():
             serializer = self.get_serializer(data=request.data, context={'request': request})
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+            # Return the created object with proper nested serialization
+            instance = serializer.instance
+            response_serializer = IntakeSheetSerializer(instance)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+# Add this new view for the employee details page
+class IntakeEntryListView(generics.ListAPIView):
+    queryset = IntakeEntry.objects.select_related('department', 'sheet').all().order_by('-created_at')
+    serializer_class = IntakeEntryDisplaySerializer
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Add filtering options
+        status_filter = self.request.query_params.get('status', None)
+        category_filter = self.request.query_params.get('category', None)
+        
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        if category_filter:
+            queryset = queryset.filter(category=category_filter)
+            
+        return queryset
+
+
+
+
+# class IntakeSheetViewSet(viewsets.ModelViewSet):
+#     queryset = IntakeSheet.objects.all().order_by('-date_created')
+#     serializer_class = IntakeSheetSerializer
+
+#     def create(self, request, *args, **kwargs):
+#         with transaction.atomic():
+#             serializer = self.get_serializer(data=request.data, context={'request': request})
+#             serializer.is_valid(raise_exception=True)
+#             self.perform_create(serializer)
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)

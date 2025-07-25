@@ -314,6 +314,7 @@ const Level1 = () => {
             case 'Evaluation':
                 return 'bg-red-50 hover:bg-red-100 border-l-4 border-red-400';
             case 'Feedback Form':
+            case 'Handover Sheet':
                 return 'bg-blue-50 hover:bg-blue-100 border-l-4 border-blue-400';
             default:
                 return 'bg-gray-50 hover:bg-gray-100 border-l-4 border-gray-400';
@@ -327,6 +328,7 @@ const Level1 = () => {
             case 'Evaluation':
                 return 'text-red-700 hover:text-red-800';
             case 'Feedback Form':
+            case 'Handover Sheet':
                 return 'text-blue-700 hover:text-blue-800';
             default:
                 return 'text-[#1c2a4d] hover:text-blue-600';
@@ -367,7 +369,7 @@ const Level1 = () => {
         <div>
             {/* <Navbar heading={levelName} /> */}
             <div className="max-w-6xl mx-auto px-4 py-6">
-                 <p className="text-[28px] font-bold text-[#1c2a4d] mt-5 mb-10">Basic DOJO Training</p>
+                 <p className="text-[28px] font-bold text-[#1c2a4d] mt-5 mb-10 text-center">Basic DOJO Training</p>
                 <div className="space-y-6 bg-white rounded-lg shadow-lg p-12">
                     {Object.keys(groupedLessons)
                         .sort((a, b) => {
